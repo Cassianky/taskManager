@@ -1,0 +1,9 @@
+# Database configuration
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/doctoranywheretest
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update

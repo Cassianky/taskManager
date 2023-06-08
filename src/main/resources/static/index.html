@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Task Manager</title>
+  </head>
+  <body>
+    <h1>Task Manager</h1>
+    <h2>Add Task</h2>
+    <form id="taskForm">
+      <input type="text" id="titleInput" placeholder="Title" required />
+      <input
+        type="text"
+        id="descriptionInput"
+        placeholder="Description"
+        required
+      />
+      <button type="submit">Add Task</button>
+    </form>
+
+    <!-- <h2 id="titleList"></h2> -->
+    <ul id="taskList"></ul>
+    <p>Note: Only can update task in the list above</p>
+
+    <h2>Search Task</h2>
+    <form id="taskSearchForm">
+      <input type="text" id="idInput" placeholder="Input ID" required />
+      <button type="submit">Search</button>
+    </form>
+    <p id="taskFound"></p>
+    <p id="searchError"></p>
+
+    <script>
+      // Function to fetch tasks from the API and update the task list
+      function fetchTasks() {
+        fetch("/tasks")
+          .then((response) => response.json())
+          .then((tasks) => {
+            const taskList = document.getElementById("taskList");
+            // if (tasks.length > 0) {
+            //   const titleList = document.getElementById("titleList");
+            //   titleList.innerHTML = "List of tasks added";
+            // } else {
+            //   titleList.innerHTML = "";
+            // }
+            taskList.innerHTML = "";
+
+            tasks.forEach((task) => {
+              const listItem = document.createElement("li");
+              listItem.innerHTML = `
+                            <span>ID: ${task.id}, </span>
+                            <span>${task.title} </span>
+                            <p>${task.description}</p>
+                            <input type="checkbox" ${
+                              task.completed ? "checked" : ""
+                            } onchange="toggleCompletion(${task.id}, this)">
+                            <button onclick="deleteTask(${
+                              task.id
+                            })">Delete</button>
+                            <p></p>
+                        `;
+              taskList.appendChild(listItem);
+            });
+          });
+      }
+
+      const taskForm = document.getElementById("taskForm");
+      taskForm.addEventListener("submit", addTask);
+
+      const taskSearchForm = document.getElementById("taskSearchForm");
+      taskSearchForm.addEventListener("submit", searchTask);
+
+      function searchTask() {
+        event.preventDefault();
+        const idInput = document.getElementById("idInput");
+        console.log(idInput.value);
+        console.log(`/tasks/${idInput.value}`);
+        fetch(`/tasks/${idInput.value}`, {
+          method: "GET",
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("TEST");
+              return response.json();
+            } else {
+              throw new Error("Task is not found!");
+            }
+          })
+          .then((task) => {
+            const taskFound = document.getElementById("taskFound");
+            taskFound.innerHTML = `<span>ID: ${task.id}, </span>
+                            <span>${task.title} </span>
+                            <p>${task.description}</p>
+                            <input type="checkbox" ${
+                              task.completed ? "checked" : ""
+                            }/>`;
+          })
+          .then(() => {
+            idInput.value = "";
+          })
+          .catch((error) => {
+            const searchError = document.getElementById("searchError");
+            searchError.innerHTML = error.message;
+          });
+      }
+
+      function addTask(event) {
+        event.preventDefault();
+        const titleInput = document.getElementById("titleInput");
+        const descriptionInput = document.getElementById("descriptionInput");
+        const task = {
+          title: titleInput.value,
+          description: descriptionInput.value,
+          completed: false,
+        };
+        fetch("/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(task),
+        }).then(() => {
+          titleInput.value = "";
+          descriptionInput.value = "";
+          fetchTasks();
+        });
+      }
+
+      // Function to toggle the completion status of a task
+      function toggleCompletion(taskId, checkbox) {
+        const task = {
+          completed: checkbox.checked,
+        };
+
+        fetch(`/tasks/${taskId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(task),
+        }).then(fetchTasks);
+      }
+
+      // Function to delete a task
+      function deleteTask(taskId) {
+        fetch(`/tasks/${taskId}`, {
+          method: "DELETE",
+        }).then(fetchTasks);
+      }
+
+      // Fetch tasks on page load
+      fetchTasks();
+    </script>
+  </body>
+</html>

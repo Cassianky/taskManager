@@ -9,7 +9,19 @@
 
 ![image](https://github.com/Cassianky/taskManager/assets/77654564/c18cbea9-1895-453a-aa56-4e8bb346989c)
 
-![image](https://github.com/Cassianky/taskManager/assets/77654564/954361f9-7ee1-4461-a48a-dea65a14dac3)
-
+## taskManager login details
+ 
 User Name: user
 Password: password
+
+![image](https://github.com/Cassianky/taskManager/assets/77654564/954361f9-7ee1-4461-a48a-dea65a14dac3)
+
+## steps to run taskManager
+
+1. Configure a local mysql server with name doctoranywheretest
+2. Change the datasource username and password in the application.properties file accordingly
+3. Make sure Maven is installed
+4. build the project using `mvn package`
+5. Run the main program
+6. Proceed to `localhost:8080`
+7. Login via the login credentials above

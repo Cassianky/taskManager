@@ -1,5 +1,8 @@
 # taskManager
 
+## Description
+A simple SpringBoot web application to perform certain tasks with an user interface. Login features are implemented as well. This is for Doctoranywhere's software engineer intern technical assessment.
+
 ## taskManager features
 * GET /tasks : Get a list of all tasks
 * POST /tasks : Create a new task
